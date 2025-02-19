@@ -12,7 +12,7 @@ scaler = MinMaxScaler()
 scaler.fit(X)
 
 # Load trained model
-loaded_model = load(open('fb.pkl', 'rb'))
+loaded_model = load(open('fb', 'rb'))
 
 def fake_bill_prediction(input_data):
     """Predict if the bill is Real or Fake"""
