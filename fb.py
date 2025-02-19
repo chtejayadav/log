@@ -1,104 +1,41 @@
-# -*- coding: utf-8 -*-
-"""
-Created on Thu Sep 24 13:01:17 2020
-
-"""
-
 import pandas as pd
 import numpy as np
 import streamlit as st 
 from sklearn.linear_model import LogisticRegression
-from pickle import dump
 from pickle import load
-import pickle
 from sklearn.preprocessing import MinMaxScaler
 
-
-
-
-
-
-
-
-data=pd.read_csv("fb.csv")
-X = data[['diagonal','height_left','height_right','margin_low','margin_up','length']]
+# Load dataset for scaling
+data = pd.read_csv("fb.csv")
+X = data[['diagonal', 'height_left', 'height_right', 'margin_low', 'margin_up', 'length']]
 scaler = MinMaxScaler()
 scaler.fit(X)
 
-loaded_model = load(open('fb', 'rb'))
+# Load trained model
+loaded_model = load(open('fb.pkl', 'rb'))
 
+def fake_bill_prediction(input_data):
+    """Predict if the bill is Real or Fake"""
+    input_data_as_numpy_array = np.asarray(input_data).reshape(1, -1)
+    input_data_scaled = scaler.transform(input_data_as_numpy_array)
+    prediction = loaded_model.predict(input_data_scaled)
+    return 'Real' if prediction[0] == 1 else 'Fake'
 
-
-
-
-
-
-
-
-
-
-
-
-
-# creating a function for Prediction
-
-def ATTORNEY_prediction(input_data):
-    
-
-    # changing the input_data to numpy array
-    input_data_as_numpy_array = np.asarray(input_data)
-
-    # reshape the array as we are predicting for one instance
-    input_data_reshaped = input_data_as_numpy_array.reshape(1,-1)
-    
-    input_data_reshaped=scaler.transform(input_data_reshaped)
-    prediction = loaded_model.predict(input_data_reshaped)
-    print(prediction)
-
-    if (prediction[0] == 1):
-      return 'Real'
-    else:
-      return 'Fake '
-  
-    
-  
 def main():
+    st.title('Fake Bill Detection: Logistic Regression Model')
     
+    # Getting user inputs
+    diagonal = st.number_input('Insert Diagonal')
+    height_left = st.number_input('Insert Height Left')
+    height_right = st.number_input('Insert Height Right')
+    margin_low = st.number_input('Insert Margin Low')
+    margin_up = st.number_input('Insert Margin Up')
+    length = st.number_input('Insert Length')
     
-    # giving a title
-    st.title('Model Deployment: Logistic Model')
-    
-    
-    # getting the input data from the user
-    
-    
-    number1 = st.number_input('Insert  diagonal')
-    number2 = st.number_input('Insert  height_left')
-    number3 = st.number_input('Insert  height_right')
-    number4 = st.number_input('Insert  margin_low')
-    number5 = st.number_input('Insert  Insulin')
-    number6 = st.number_input('Insert  length')
-
-    
-    
-    
-#     # code for Prediction
-    diagnosis = ''
-    
-    # creating a button for Prediction
-    
-    if st.button('Fake Bill Test Result'):
-        diagnosis = ATTORNEY_prediction([number1, number2, number3, number4,number5,number6])
-        
-        
-    st.success(diagnosis)
-    
-    
-    
-    
+    # Prediction
+    if st.button('Check Fake Bill'):
+        result = fake_bill_prediction([diagonal, height_left, height_right, margin_low, margin_up, length])
+        st.success(f'The bill is {result}')
     
 if __name__ == '__main__':
     main()
-    
-
-
